@@ -1,10 +1,31 @@
-# Codex Model Slider · Codex 三档模型滑块
+<p align="center">
+  <img src="assets/hero.svg" alt="Codex Model Slider — Luna Max, Sol High, Astra Medium. Three presets, one slider." width="100%">
+</p>
 
-**双击一个脚本，把 Codex 原生滑块改成常用的三组「模型 + 推理强度」。**
+<h1 align="center">Codex Model Slider · 三档模型滑块</h1>
 
-Luna Max → Sol High → Astra Medium。适用于 macOS，无需修改应用包或安装插件。
+<p align="center"><strong>把常用的「模型 + 推理强度」放进 Codex 原生滑块。</strong></p>
 
-[English](README.md) · [为什么选择这三档](https://github.com/cabbagecabbage/chatgpt-plus-codex-cn-guide/blob/main/docs/model-selection-and-reasoning.md)
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-macOS-111827?style=flat-square" alt="Platform: macOS">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3B82F6?style=flat-square" alt="License: MIT"></a>
+  <img src="https://img.shields.io/badge/languages-English%20%2F%20%E4%B8%AD%E6%96%87-6366F1?style=flat-square" alt="English and Chinese">
+</p>
+
+[English](README.md) · **简体中文** · [一行安装](#快速使用) · [三档怎么选](#为什么是这三档)
+
+| 拖一下，就切换 | 双击，就启动 | 环境，自动准备 |
+| :--- | :--- | :--- |
+| 一次选好模型与推理强度 | 一行安装到桌面，以后双击使用 | 自动检测 Node.js，缺失时下载并校验 |
+
+## 实际效果
+
+| Luna Max | Sol High | Astra Medium |
+| :---: | :---: | :---: |
+| ![Codex 模型滑块：GPT-5.6 Luna，最高推理强度](assets/luna-max.png) | ![Codex 模型滑块：GPT-5.6 Sol，高推理强度](assets/sol-high.png) | ![Codex 模型滑块：GPT-6 Astra，中等推理强度](assets/astra-medium.png) |
+| 日常简单任务 | 目标明确的工程开发 | 方案、架构与设计讨论 |
+
+截图展示已有界面效果；实际可用模型以你的账号和应用版本为准。
 
 ## 快速使用
 
@@ -16,33 +37,18 @@ Luna Max → Sol High → Astra Medium。适用于 macOS，无需修改应用包
 
 桌面会出现 **「Codex-Model-Slider.command」**。先结束 Codex 中正在进行的任务，再双击它；等终端显示 **「三档已加载」**，就可以拖动原生滑块切换了。以后只需双击桌面的文件。安装与运行提示均为中英双语。
 
-安装命令只下载脚本并设置执行权限，不会启动或退出应用，也不需要 `sudo`。桌面已有同名文件时会停止，避免覆盖你的自定义设置；更新时先把旧文件移走，再运行命令。你可以先[查看安装脚本](install.sh)。
-
 **运行条件：** macOS，应用安装在 `/Applications/ChatGPT.app`；Node.js 会自动检查并准备，无需手动安装；账号需要本来就能使用对应模型和强度。脚本不会解锁模型或增加额度。
 
-如果 Codex 正在运行，脚本会先等待 5 秒，期间可以按 Ctrl+C 取消，再请求正常退出并重启。若自动退出失败，按提示切回 Codex，按 ⌘Q。
-
-### 三档效果
-
-| Luna Max | Sol High | Astra Medium |
-| :---: | :---: | :---: |
-| ![Codex 模型滑块：GPT-5.6 Luna，最高推理强度](assets/luna-max.png) | ![Codex 模型滑块：GPT-5.6 Sol，高推理强度](assets/sol-high.png) | ![Codex 模型滑块：GPT-6 Astra，中等推理强度](assets/astra-medium.png) |
-| 日常简单任务 | 目标明确的工程开发 | 方案、架构与设计讨论 |
-
-截图展示已有界面效果；实际可用模型以你的账号和应用版本为准。
-
-### 手动下载
+<details>
+<summary><strong>手动下载与启动说明</strong></summary>
 
 也可以点击 **Code → Download ZIP**，解压后双击 [Codex-Model-Slider.command](Codex-Model-Slider.command)。如果想把它安装到桌面，在终端输入 `bash `，拖入解压目录里的 `install.sh`，再输入 ` --local` 并回车。
 
-### 打不开或没有生效？
+安装命令只下载脚本并设置执行权限，不会启动或退出应用，也不需要 `sudo`。桌面已有同名文件时会停止，避免覆盖你的自定义设置；更新时先把旧文件移走，再运行命令。你可以先[查看安装脚本](install.sh)。
 
-- **提示没有执行权限：** 打开终端，输入 `chmod +x `（末尾留一个空格），把解压后的 `.command` 文件拖进去，按回车，再双击文件。
-- **macOS 拦截：** 确认文件来自本仓库并阅读脚本后，按系统提示到「系统设置 → 隐私与安全性」允许打开，不必关闭系统安全保护。
-- **请求自动化权限：** 首次运行可能需要允许终端控制 Codex，以便正常退出应用。
-- **仍只显示一个模型的推理强度：** 尝试在原选择器中点击「重置为默认」，再检查模型名称。
-- **Node.js 下载失败：** 检查网络后重新双击即可。准备失败时不会退出或启动应用。
-- **显示加载失败：** 当前应用内部接口可能已变化。完全退出后正常打开应用即可恢复使用；不要反复重启正在执行任务的应用。
+如果 Codex 正在运行，脚本会先等待 5 秒，期间可以按 Ctrl+C 取消，再请求正常退出并重启。若自动退出失败，按提示切回 Codex，按 ⌘Q。
+
+</details>
 
 ## 为什么做这个项目？
 
@@ -64,7 +70,10 @@ Luna Max → Sol High → Astra Medium。适用于 macOS，无需修改应用包
 
 完整背景见配套指南中的 **[《Codex 模型与推理强度选择详细分析》](https://github.com/cabbagecabbage/chatgpt-plus-codex-cn-guide/blob/main/docs/model-selection-and-reasoning.md)**。其中当前三档的理由是个人使用观察，历史评测与成本分析有单独的适用范围，不能当作这三档的严格对照实验或订阅额度保证。
 
-## 如何自定义？
+## 按需了解更多
+
+<details>
+<summary><strong>自定义三档</strong></summary>
 
 用文本编辑器打开 `Codex-Model-Slider.command`，找到开头的 `presets`，改成账号支持的三个组合，然后重新运行：
 
@@ -78,7 +87,10 @@ const presets=[
 
 模型 ID 和推理强度必须匹配账号及客户端实际支持的值。终端成功提示中的三档名称是固定文字，自定义时也可以同步修改。
 
-## 原理与恢复
+</details>
+
+<details>
+<summary><strong>运行原理与恢复默认</strong></summary>
 
 脚本用临时调试端口启动官方应用，通过 Chromium DevTools Protocol（CDP）连接 `app://-/` 界面，在内存中包装 Statsig 客户端的 `getDynamicConfig`，只替换配置 `423260384` 的 `presets`，再发送 `values_updated` 通知界面刷新。滑块的模型切换、参数保存和可用性判断仍由应用原有代码处理。
 
@@ -86,7 +98,10 @@ const presets=[
 
 **恢复原生滑块：完全退出应用，再从 Dock 正常打开。** 已经选定的模型可能仍由应用自身保存；恢复滑块不等于清空会话设置。
 
-## 脚本具体会做什么？
+</details>
+
+<details>
+<summary><strong>自动下载、文件位置与卸载</strong></summary>
 
 1. **安装到桌面：** 一行安装命令从本仓库下载启动脚本，设置执行权限；不启动应用，不覆盖桌面已有的同名文件。
 2. **双击后准备环境：** 检查固定应用路径和可用的 Node.js。只有缺少兼容运行环境时才下载。
@@ -98,6 +113,20 @@ const presets=[
 
 **清理：** 删除桌面的 `Codex-Model-Slider.command` 即可移除启动入口。如果曾自动下载 Node.js，还可在 Finder「前往文件夹」中输入 `~/Library/Application Support/Codex Model Slider`，删除这个工具专用目录。不要删除你已有的其他 Node.js 安装。恢复原生滑块只需完全退出应用后正常打开。
 
+</details>
+
+<details>
+<summary><strong>排查问题</strong></summary>
+
+- **提示没有执行权限：** 打开终端，输入 `chmod +x `（末尾留一个空格），把解压后的 `.command` 文件拖进去，按回车，再双击文件。
+- **macOS 拦截：** 确认文件来自本仓库并阅读脚本后，按系统提示到「系统设置 → 隐私与安全性」允许打开，不必关闭系统安全保护。
+- **请求自动化权限：** 首次运行可能需要允许终端控制 Codex，以便正常退出应用。
+- **仍只显示一个模型的推理强度：** 尝试在原选择器中点击「重置为默认」，再检查模型名称。
+- **Node.js 下载失败：** 检查网络后重新双击即可。准备失败时不会退出或启动应用。
+- **显示加载失败：** 当前应用内部接口可能已变化。完全退出后正常打开应用即可恢复使用；不要反复重启正在执行任务的应用。
+
+</details>
+
 ## 兼容性与边界
 
 - 这是非官方工具，依赖应用内部接口，没有官方兼容性承诺。应用更新后可能失效，当前未提供版本、签名或归档指纹校验，也不自动适配。
@@ -105,12 +134,15 @@ const presets=[
 - 脚本不要求 API key，不读取聊天内容、不保存诊断日志或会话文件；应用自身仍会正常联网。
 - 保留原脚本的应用名称、路径和滑块行为，增加桌面安装、Node.js 自动准备及中英双语提示。已完成语法检查、隔离安装和运行环境准备测试；未重新进行应用重启或界面验收。
 
-## 配套阅读
+<details>
+<summary><strong>配套阅读与官方参考</strong></summary>
 
 **[ChatGPT Plus 国内订阅与 Codex 使用指南](https://github.com/cabbagecabbage/chatgpt-plus-codex-cn-guide)**：订阅、配置和模型选择的完整背景。本项目专注于把常用组合放进滑块，详细选择依据在指南中维护。
 
 官方模型参数参考：[GPT-6 Astra](https://developers.openai.com/api/docs/models/gpt-6-astra)。官方 API 文档不代表这个客户端内部接口受支持，也不保证某个账号可用。
 
-## 许可
+</details>
+
+---
 
 项目代码与文档采用 [MIT License](LICENSE)。截图中的产品界面和商标归其各自权利人所有。本项目与 OpenAI 无隶属或背书关系。

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="294.4" viewBox="0 0 1200 460" fill="none">
+  <title>Codex Model Slider — Three presets. One slider.</title>
+  <desc>A blue slider connects Luna Max, Sol High and Astra Medium on a dark background. A conceptual illustration of the three model and reasoning presets.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="460" gradientUnits="userSpaceOnUse"><stop stop-color="#101D36"/><stop offset="1" stop-color="#080D19"/></linearGradient>
+    <linearGradient id="track" x1="190" y1="0" x2="1010" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#70C8FF"/><stop offset=".5" stop-color="#488DFF"/><stop offset="1" stop-color="#9B8AFF"/></linearGradient>
+    <radialGradient id="halo"><stop stop-color="#3478FF" stop-opacity=".2"/><stop offset="1" stop-color="#3478FF" stop-opacity="0"/></radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" stroke="#A1B7DF" stroke-opacity=".035"/></pattern>
+  </defs>
+  <rect x="1" y="1" width="1198" height="458" rx="26" fill="url(#bg)" stroke="#263550"/>
+  <rect x="1" y="1" width="1198" height="458" rx="26" fill="url(#grid)"/>
+  <ellipse cx="600" cy="280" rx="530" ry="230" fill="url(#halo)"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">
+    <text x="600" y="52" font-size="12" font-weight="600" letter-spacing="3.5" fill="#92BDF8">MODEL + REASONING PRESETS</text>
+    <text x="600" y="118" font-size="52" font-weight="700" letter-spacing="-1.7" fill="#F4F7FF">Codex Model Slider</text>
+    <text x="600" y="157" font-size="22" fill="#A9B8D2">Three presets. One slider.</text>
+    <g fill="#0E1B32" stroke="#2C4163">
+      <rect x="62" y="208" width="256" height="87" rx="16"/>
+      <rect x="472" y="208" width="256" height="87" rx="16"/>
+      <rect x="882" y="208" width="256" height="87" rx="16"/>
+    </g>
+    <text x="190" y="242" font-size="23" font-weight="600" fill="#EAF4FF">Luna <tspan fill="#7ACBFF">Max</tspan></text>
+    <text x="600" y="242" font-size="23" font-weight="600" fill="#EAF4FF">Sol <tspan fill="#82AEFF">High</tspan></text>
+    <text x="1010" y="242" font-size="23" font-weight="600" fill="#EAF4FF">Astra <tspan fill="#B5A6FF">Medium</tspan></text>
+    <g font-size="14" fill="#9BAEC9"><text x="190" y="270">Everyday tasks</text><text x="600" y="270">Engineering</text><text x="1010" y="270">Planning &amp; design</text></g>
+    <path d="M190 330H1010" stroke="url(#track)" stroke-width="18" stroke-opacity=".1" stroke-linecap="round"/>
+    <path d="M190 330H1010" stroke="url(#track)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="190" cy="330" r="9" fill="#79CBFF"/>
+    <circle cx="600" cy="330" r="26" fill="#5A98FF" fill-opacity=".16"/>
+    <circle cx="600" cy="330" r="17" fill="#F4F8FF"/>
+    <circle cx="600" cy="330" r="5" fill="#4A8CF5"/>
+    <circle cx="1010" cy="330" r="9" fill="#AB99FF"/>
+    <text x="600" y="412" font-size="14" fill="#9BAEC9" letter-spacing=".5">macOS  ·  One-line install  ·  Double-click launch</text>
+  </g>
+</svg>
