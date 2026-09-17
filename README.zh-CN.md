@@ -4,7 +4,7 @@
 
 Luna Max → Sol High → Astra Medium。适用于 macOS，无需修改应用包或安装插件。
 
-[English](README.md) · [为什么选择这三档](#为什么是这三档)
+[English](README.md) · [为什么选择这三档](https://github.com/cabbagecabbage/chatgpt-plus-codex-cn-guide/blob/main/docs/model-selection-and-reasoning.md)
 
 ## 快速使用
 
@@ -62,6 +62,8 @@ Luna Max → Sol High → Astra Medium。适用于 macOS，无需修改应用包
 
 可以按任务直接选档，不需要从左到右逐级尝试。三档也不是统一的速度、价格或能力刻度。以上是个人体验，未经严格对照测试，不保证特定的效果或额度消耗。
 
+完整背景见配套指南中的 **[《Codex 模型与推理强度选择详细分析》](https://github.com/cabbagecabbage/chatgpt-plus-codex-cn-guide/blob/main/docs/model-selection-and-reasoning.md)**。其中当前三档的理由是个人使用观察，历史评测与成本分析有单独的适用范围，不能当作这三档的严格对照实验或订阅额度保证。
+
 ## 如何自定义？
 
 用文本编辑器打开 `Codex-Model-Slider.command`，找到开头的 `presets`，改成账号支持的三个组合，然后重新运行：
@@ -103,7 +105,9 @@ const presets=[
 - 脚本不要求 API key，不读取聊天内容、不保存诊断日志或会话文件；应用自身仍会正常联网。
 - 保留原脚本的应用名称、路径和滑块行为，增加桌面安装、Node.js 自动准备及中英双语提示。已完成语法检查、隔离安装和运行环境准备测试；未重新进行应用重启或界面验收。
 
-## 官方参考
+## 配套阅读
+
+**[ChatGPT Plus 国内订阅与 Codex 使用指南](https://github.com/cabbagecabbage/chatgpt-plus-codex-cn-guide)**：订阅、配置和模型选择的完整背景。本项目专注于把常用组合放进滑块，详细选择依据在指南中维护。
 
 官方模型参数参考：[GPT-6 Astra](https://developers.openai.com/api/docs/models/gpt-6-astra)。官方 API 文档不代表这个客户端内部接口受支持，也不保证某个账号可用。
 
