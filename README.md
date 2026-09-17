@@ -4,7 +4,7 @@
 
 Luna Max → Sol High → Astra Medium. A single script; no app-bundle patching or plugin installation.
 
-[简体中文](README.zh-CN.md) · [Why these presets?](https://github.com/cabbagecabbage/chatgpt-plus-codex-cn-guide/blob/main/docs/model-selection-and-reasoning.md)
+[简体中文](README.zh-CN.md) · [Why these presets?](#why-these-presets)
 
 ## Quick start
 
@@ -46,6 +46,8 @@ Alternatively, choose **Code → Download ZIP**, extract it, and double-click [C
 
 A few model-and-reasoning combinations cover most of the author's daily workflow. Selecting both settings repeatedly adds friction. This script places those combinations on the native slider so one movement selects both settings.
 
+## Why these presets?
+
 The defaults reflect personal experience, not controlled benchmarks:
 
 | Preset | Intended use | Personal trade-off |
@@ -55,8 +57,6 @@ The defaults reflect personal experience, not controlled benchmarks:
 | **Astra Medium** | Planning, architecture, mechanisms and Skill design | Prioritize judgment and fewer revisions |
 
 Choose directly for the task. The positions are not a universal scale of speed, price or capability.
-
-Read the companion **[model selection and reasoning analysis](https://github.com/cabbagecabbage/chatgpt-plus-codex-cn-guide/blob/main/docs/model-selection-and-reasoning.md)** (Chinese) for the rationale. Its historical benchmark section has a separate scope and does not prove the relative performance or subscription usage of these three presets.
 
 ## Customize the presets
 
@@ -99,9 +99,7 @@ Official archive SHA-256 digests are pinned in the script and checked before ext
 - The script requires no API key, reads no chat content, and saves no diagnostic logs or session files. The app itself still connects to its services.
 - The verified app name, path and slider behavior are preserved; user-facing messages are bilingual. Desktop installation and automatic Node.js preparation are covered by syntax and isolated behavior checks. No fresh live-app relaunch or UI acceptance test was performed.
 
-## Related guide
-
-**[ChatGPT Plus & Codex guide](https://github.com/cabbagecabbage/chatgpt-plus-codex-cn-guide)** (Chinese) covers subscriptions, setup and model selection. This project focuses on applying the presets; their detailed rationale lives in the guide.
+## Official reference
 
 Official model parameter reference: [GPT-6 Astra](https://developers.openai.com/api/docs/models/gpt-6-astra). API documentation does not imply support for this internal client interface or availability on every account.
 
