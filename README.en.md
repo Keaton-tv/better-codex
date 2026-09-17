@@ -8,11 +8,15 @@ Luna Max → Sol High → Astra Medium. A single script; no app-bundle patching 
 
 ## Quick start
 
-1. Choose **Code → Download ZIP** on GitHub and extract the archive.
-2. Finish active Codex tasks, then double-click **[三档滑块.command](三档滑块.command)**.
-3. Wait for the app to reopen and the terminal to show **三档已加载** (“three presets loaded”). Use the native slider to switch presets.
+Open Terminal on macOS, paste this one line, and press Return:
 
-Launch through the script whenever you want these presets. You can keep it on your desktop. Terminal messages are currently in Chinese.
+```bash
+(set -o pipefail; curl -fsSL https://raw.githubusercontent.com/cabbagecabbage/codex-model-slider/main/install.sh | /bin/bash)
+```
+
+**三档滑块.command** appears on your Desktop. Finish active Codex tasks, double-click it, and wait for **三档已加载** (“three presets loaded”). Then use the native slider. Next time, just double-click the desktop file. Launcher messages are currently in Chinese.
+
+Installation downloads the launcher and makes it executable. It does not launch or quit the app and needs no `sudo`. An existing file with the same name is never overwritten: move it aside before reinstalling or updating. [Inspect the installer](install.sh).
 
 **Requirements:** macOS; the app at `/Applications/ChatGPT.app`; its bundled Node.js, or an existing Node.js 22+ installation; an account with access to the selected models and reasoning levels. This tool does not unlock models or increase usage limits.
 
@@ -24,6 +28,10 @@ If the app is running, you have five seconds to cancel with Ctrl+C before the sc
 | Simple everyday tasks | Well-defined engineering | Planning and architecture |
 
 Screenshots show an existing UI result; availability depends on your account and app version.
+
+## Manual download
+
+Alternatively, choose **Code → Download ZIP**, extract it, and double-click [三档滑块.command](三档滑块.command). To install that copy on your Desktop, type `bash ` in Terminal, drag in the extracted `install.sh`, append ` --local`, and press Return.
 
 ## Troubleshooting
 
@@ -77,7 +85,7 @@ No ASAR, Info.plist, app source, signature or persistent preset file is modified
 - Unofficial and dependent on internal interfaces. App updates may break it. There is no version, signature or archive fingerprint verification or automatic adaptation.
 - The debugging port is launched with `127.0.0.1` and remains open for that app session. It allows page execution: do not forward it or share it with untrusted programs. Fully quitting the app closes it.
 - The script requires no API key, reads no chat content, and saves no diagnostic logs or session files. The app itself still connects to its services.
-- This repository preparation preserves the original script logic, updates its executable permission, and checks syntax. It does not include a fresh live-app relaunch or UI acceptance test.
+- This repository preparation preserves the original script logic, adds a desktop installer, and checks syntax and isolated installation behavior. It does not include a fresh live-app relaunch or UI acceptance test.
 
 ## Related guide
 
