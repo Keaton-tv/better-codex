@@ -18,6 +18,8 @@
 | :--- | :--- | :--- |
 | Select model + reasoning together | Install once, launch from your Desktop | Node.js checked, downloaded and verified when needed |
 
+If this saves you a few clicks, please give the project a **Star ⭐**! Issues and feedback are welcome too.
+
 ## See the presets
 
 | Luna Max | Sol High | Astra Medium |
