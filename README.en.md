@@ -18,7 +18,7 @@ Open Terminal on macOS, paste this one line, and press Return:
 
 Installation downloads the launcher and makes it executable. It does not launch or quit the app and needs no `sudo`. An existing file with the same name is never overwritten: move it aside before reinstalling or updating. [Inspect the installer](install.sh).
 
-**Requirements:** macOS; the app at `/Applications/ChatGPT.app`; its bundled Node.js, or an existing Node.js 22+ installation; an account with access to the selected models and reasoning levels. This tool does not unlock models or increase usage limits.
+**Requirements:** macOS; the app at `/Applications/ChatGPT.app`; Node.js is checked and prepared automatically, with no manual installation; an account with access to the selected models and reasoning levels. This tool does not unlock models or increase usage limits.
 
 If the app is running, you have five seconds to cancel with Ctrl+C before the script requests a normal quit and relaunch. If automatic quitting fails, quit manually with ⌘Q when prompted.
 
@@ -39,7 +39,7 @@ Alternatively, choose **Code → Download ZIP**, extract it, and double-click [�
 - **macOS blocks opening:** inspect the script and verify its source, then follow System Settings → Privacy & Security to allow it. Do not disable system security protections.
 - **Automation permission:** Terminal may need permission to control Codex so the app can quit normally.
 - **Only one model's reasoning levels appear:** try “Reset to default” in the original selector, then check the model names.
-- **Node.js missing:** install Node.js 22+; the script does not install dependencies.
+- **Node.js download fails:** check your connection and double-click again. Preparation failures do not quit or launch the app.
 - **Loading fails:** the internal interface may have changed. Fully quit and launch normally to restore the original slider.
 
 ## Why this project?
@@ -80,12 +80,24 @@ No ASAR, Info.plist, app source, signature or persistent preset file is modified
 
 **To restore the original slider, fully quit the app and launch it normally from the Dock.** The app may retain the model you selected; restoring the slider does not reset conversation settings.
 
+## What does the script do?
+
+1. **Desktop installation:** download the launcher from this repository and make it executable. Do not launch the app or overwrite an existing desktop file.
+2. **Prepare on double-click:** check the fixed app path and a usable Node.js runtime. Download only when no compatible runtime is available.
+3. **Launch when ready:** use the original normal quit/relaunch flow and apply the slider. The five-second cancellation window remains.
+
+On first launch, the script reuses a compatible bundled or local Node.js. If neither works, it downloads Node.js 22.23.2 for Apple Silicon or Intel from the [official Node.js site](https://nodejs.org/dist/v22.23.2/), verifies SHA-256, and caches it in `~/Library/Application Support/Codex Model Slider`. Later launches reuse it. No Homebrew, administrator password, PATH setup or system Node.js replacement is needed. The first download needs internet access; approve macOS permission prompts as needed.
+
+Official archive SHA-256 digests are pinned in the script and checked before extraction or execution. Failed downloads or checksums clean up temporary files and stop before restarting the app; double-click again to retry. The cached runtime is private to this tool, with the official license included.
+
+**Remove:** delete the desktop launcher. If Node.js was automatically downloaded, use Finder → Go to Folder to open `~/Library/Application Support/Codex Model Slider` and remove this tool-specific directory too. Keep any other Node.js installations. Restoring the original slider only requires fully quitting and launching the app normally.
+
 ## Compatibility and limits
 
 - Unofficial and dependent on internal interfaces. App updates may break it. There is no version, signature or archive fingerprint verification or automatic adaptation.
 - The debugging port is launched with `127.0.0.1` and remains open for that app session. It allows page execution: do not forward it or share it with untrusted programs. Fully quitting the app closes it.
 - The script requires no API key, reads no chat content, and saves no diagnostic logs or session files. The app itself still connects to its services.
-- This repository preparation preserves the original script logic, adds a desktop installer, and checks syntax and isolated installation behavior. It does not include a fresh live-app relaunch or UI acceptance test.
+- The original app name, path and slider JavaScript remain unchanged. Desktop installation and automatic Node.js preparation are covered by syntax and isolated behavior checks. No fresh live-app relaunch or UI acceptance test was performed.
 
 ## Related guide
 
