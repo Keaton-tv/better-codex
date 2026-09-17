@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-LAUNCHER = ROOT / '三档滑块.command'
+LAUNCHER = ROOT / 'Codex-Model-Slider.command'
 ARM_HASH = '61130f394c1630d211dd50aecc4353d379480f36d3ac913cd85dbba1aed585c6'
 X64_HASH = '58e99022c2ff89395576cc7fd4d98cea24bb68081475d5f88b801ee8729fb026'
 
