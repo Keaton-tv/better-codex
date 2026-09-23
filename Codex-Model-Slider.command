@@ -87,9 +87,9 @@ import {spawn, execFileSync as run} from 'node:child_process';
 import net from 'node:net';
 const app='/Applications/ChatGPT.app/Contents/MacOS/ChatGPT';
 const presets=[
-  {model:'gpt-5.6-luna',reasoning_effort:'max'},
-  {model:'gpt-5.6-sol',reasoning_effort:'high'},
-  {model:'gpt-6-astra',reasoning_effort:'medium'},
+  {model:'gpt-6-luna',reasoning_effort:'high'},
+  {model:'gpt-6-sol',reasoning_effort:'medium'},
+  {model:'gpt-6-astra',reasoning_effort:'low'},
 ];
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const running=()=>run('/bin/ps',['-axo','comm='],{encoding:'utf8'}).split('\n').some(s=>s.trim()===app);
@@ -144,6 +144,6 @@ try{
       }
     }catch{}
   }
-  console.log(loaded?'Three presets loaded / 三档已加载：Luna Max → Sol High → Astra Medium':'Loading failed; this app version may be incompatible. Fully quit and launch Codex normally. / 加载失败；当前版本可能不兼容。完全退出后可正常启动 Codex。');
+  console.log(loaded?'Three presets loaded / 三档已加载：Luna High → Sol Medium → Astra Low':'Loading failed; this app version may be incompatible. Fully quit and launch Codex normally. / 加载失败；当前版本可能不兼容。完全退出后可正常启动 Codex。');
 }catch(e){console.error("Launch failed / 启动失败:",e.message);process.exitCode=1;}
 JS

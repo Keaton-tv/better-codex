@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="768" height="294.4" viewBox="0 0 1200 460" fill="none">
   <title>Codex Model Slider — Three presets. One slider.</title>
-  <desc>A blue slider connects Luna Max, Sol High and Astra Medium on a dark background. A conceptual illustration of the three model and reasoning presets.</desc>
+  <desc>A blue slider connects Luna High, Sol Medium and Astra Low on a dark background. A conceptual illustration of the three model and reasoning presets.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="460" gradientUnits="userSpaceOnUse"><stop stop-color="#101D36"/><stop offset="1" stop-color="#080D19"/></linearGradient>
     <linearGradient id="track" x1="190" y1="0" x2="1010" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#70C8FF"/><stop offset=".5" stop-color="#488DFF"/><stop offset="1" stop-color="#9B8AFF"/></linearGradient>
@@ -19,9 +19,9 @@
       <rect x="472" y="208" width="256" height="87" rx="16"/>
       <rect x="882" y="208" width="256" height="87" rx="16"/>
     </g>
-    <text x="190" y="242" font-size="23" font-weight="600" fill="#EAF4FF">Luna <tspan fill="#7ACBFF">Max</tspan></text>
-    <text x="600" y="242" font-size="23" font-weight="600" fill="#EAF4FF">Sol <tspan fill="#82AEFF">High</tspan></text>
-    <text x="1010" y="242" font-size="23" font-weight="600" fill="#EAF4FF">Astra <tspan fill="#B5A6FF">Medium</tspan></text>
+    <text x="190" y="242" font-size="23" font-weight="600" fill="#EAF4FF">Luna <tspan fill="#7ACBFF">High</tspan></text>
+    <text x="600" y="242" font-size="23" font-weight="600" fill="#EAF4FF">Sol <tspan fill="#82AEFF">Medium</tspan></text>
+    <text x="1010" y="242" font-size="23" font-weight="600" fill="#EAF4FF">Astra <tspan fill="#B5A6FF">Low</tspan></text>
     <g font-size="14" fill="#9BAEC9"><text x="190" y="270">Everyday tasks</text><text x="600" y="270">Engineering</text><text x="1010" y="270">Planning &amp; design</text></g>
     <path d="M190 330H1010" stroke="url(#track)" stroke-width="18" stroke-opacity=".1" stroke-linecap="round"/>
     <path d="M190 330H1010" stroke="url(#track)" stroke-width="6" stroke-linecap="round"/>

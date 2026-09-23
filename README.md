@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/hero.svg" alt="Codex Model Slider — Luna Max, Sol High, Astra Medium. Three presets, one slider." width="100%">
+  <img src="assets/hero.svg" alt="Codex Model Slider — Luna High, Sol Medium, Astra Low. Three presets, one slider." width="100%">
 </p>
 
 <h1 align="center">Codex Model Slider</h1>
@@ -18,23 +18,20 @@
 | :--- | :--- | :--- |
 | Select model + reasoning together | Install once, launch from your Desktop | Node.js checked, downloaded and verified when needed |
 
-If this saves you a few clicks, please give the project a **Star ⭐**! Issues and feedback are welcome too.
+This fork uses Keaton's preferred GPT-6 presets. The original project is [cabbagecabbage/codex-model-slider](https://github.com/cabbagecabbage/codex-model-slider).
 
 ## See the presets
 
-| Luna Max | Sol High | Astra Medium |
+| Luna High | Sol Medium | Astra Low |
 | :---: | :---: | :---: |
-| ![Codex slider: GPT-5.6 Luna, maximum reasoning](assets/luna-max.png) | ![Codex slider: GPT-5.6 Sol, high reasoning](assets/sol-high.png) | ![Codex slider: GPT-6 Astra, medium reasoning](assets/astra-medium.png) |
-| Simple everyday tasks | Well-defined engineering | Planning and architecture |
-
-Screenshots show an existing UI result; availability depends on your account and app version.
+| GPT-6 Luna · high | GPT-6 Sol · medium | GPT-6 Astra · low |
 
 ## Quick start
 
 Open Terminal on macOS, paste this one line, and press Return:
 
 ```bash
-(set -o pipefail; curl -fsSL https://raw.githubusercontent.com/cabbagecabbage/codex-model-slider/main/install.sh | /bin/bash)
+(set -o pipefail; curl -fsSL https://raw.githubusercontent.com/Keaton-tv/codex-model-slider/main/install.sh | /bin/bash)
 ```
 
 **Codex-Model-Slider.command** appears on your Desktop. Finish active Codex tasks, double-click it, and wait for **Three presets loaded / 三档已加载**. Then use the native slider. Next time, just double-click the desktop file. Installer and launcher messages are shown in both English and Chinese.
@@ -58,13 +55,13 @@ A few model-and-reasoning combinations cover most of the author's daily workflow
 
 ## Why these presets?
 
-The defaults reflect personal experience, not controlled benchmarks:
+This fork uses these three combinations:
 
 | Preset | Intended use | Personal trade-off |
 | --- | --- | --- |
-| **Luna Max** | Simple tasks without urgency | Prioritize usage allowance over waiting time |
-| **Sol High** | Engineering with clear requirements and testable acceptance criteria | Prioritize implementation and progress |
-| **Astra Medium** | Planning, architecture, mechanisms and Skill design | Prioritize judgment and fewer revisions |
+| **Luna High** | Focused tasks | Lower usage |
+| **Sol Medium** | Everyday work | Balanced speed and depth |
+| **Astra Low** | More demanding work | Stronger model with lighter reasoning |
 
 Choose directly for the task. The positions are not a universal scale of speed, price or capability.
 
@@ -77,9 +74,9 @@ Edit `presets` near the top of `Codex-Model-Slider.command`, keep three supporte
 
 ```js
 const presets=[
-  {model:'gpt-5.6-luna',reasoning_effort:'max'},
-  {model:'gpt-5.6-sol',reasoning_effort:'high'},
-  {model:'gpt-6-astra',reasoning_effort:'medium'},
+  {model:'gpt-6-luna',reasoning_effort:'high'},
+  {model:'gpt-6-sol',reasoning_effort:'medium'},
+  {model:'gpt-6-astra',reasoning_effort:'low'},
 ];
 ```
 

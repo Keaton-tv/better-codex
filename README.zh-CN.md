@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/hero.svg" alt="Codex Model Slider — Luna Max, Sol High, Astra Medium. Three presets, one slider." width="100%">
+  <img src="assets/hero.svg" alt="Codex Model Slider — Luna High, Sol Medium, Astra Low. Three presets, one slider." width="100%">
 </p>
 
 <h1 align="center">Codex Model Slider · 三档模型滑块</h1>
@@ -18,23 +18,20 @@
 | :--- | :--- | :--- |
 | 一次选好模型与推理强度 | 一行安装到桌面，以后双击使用 | 自动检测 Node.js，缺失时下载并校验 |
 
-如果这个小工具帮你省了几次点击，欢迎给项目点个 **Star ⭐** 支持一下！也欢迎提 Issue 分享你的常用组合和使用反馈。
+此 fork 使用 Keaton 选择的 GPT-6 组合。原项目：[cabbagecabbage/codex-model-slider](https://github.com/cabbagecabbage/codex-model-slider)。
 
 ## 实际效果
 
-| Luna Max | Sol High | Astra Medium |
+| Luna High | Sol Medium | Astra Low |
 | :---: | :---: | :---: |
-| ![Codex 模型滑块：GPT-5.6 Luna，最高推理强度](assets/luna-max.png) | ![Codex 模型滑块：GPT-5.6 Sol，高推理强度](assets/sol-high.png) | ![Codex 模型滑块：GPT-6 Astra，中等推理强度](assets/astra-medium.png) |
-| 日常简单任务 | 目标明确的工程开发 | 方案、架构与设计讨论 |
-
-截图展示已有界面效果；实际可用模型以你的账号和应用版本为准。
+| GPT-6 Luna · high | GPT-6 Sol · medium | GPT-6 Astra · low |
 
 ## 快速使用
 
 打开 macOS「终端」，复制下面这一行并按回车：
 
 ```bash
-(set -o pipefail; curl -fsSL https://raw.githubusercontent.com/cabbagecabbage/codex-model-slider/main/install.sh | /bin/bash)
+(set -o pipefail; curl -fsSL https://raw.githubusercontent.com/Keaton-tv/codex-model-slider/main/install.sh | /bin/bash)
 ```
 
 桌面会出现 **「Codex-Model-Slider.command」**。先结束 Codex 中正在进行的任务，再双击它；等终端显示 **「三档已加载」**，就可以拖动原生滑块切换了。以后只需双击桌面的文件。安装与运行提示均为中英双语。
@@ -60,17 +57,16 @@
 
 ## 为什么是这三档？
 
-这套默认值来自个人使用习惯，主要在额度、完成任务的等待时间和判断力之间取舍：
+这个 fork 使用以下三档：
 
 | 默认组合 | 更常用的场景 | 选择理由（个人体验） |
 | --- | --- | --- |
-| **Luna Max** | 简单需求、日常任务，不急着拿结果 | 更看重节省额度，可以接受等待 |
-| **Sol High** | 需求明确、能用测试和验收判断结果的工程开发 | 更看重实现能力和推进速度 |
-| **Astra Medium** | 方案、机制、架构与 Skill 设计 | 更看重理解意图、权衡方案和减少返工 |
+| **Luna High** | 范围明确的任务 | 更低的额度消耗 |
+| **Sol Medium** | 日常工作 | 平衡速度与深度 |
+| **Astra Low** | 更复杂的工作 | 更强的模型，较轻的推理强度 |
 
 可以按任务直接选档，不需要从左到右逐级尝试。三档也不是统一的速度、价格或能力刻度。以上是个人体验，未经严格对照测试，不保证特定的效果或额度消耗。
 
-完整背景见配套指南中的 **[《Codex 模型与推理强度选择详细分析》](https://github.com/cabbagecabbage/chatgpt-plus-codex-cn-guide/blob/main/docs/model-selection-and-reasoning.md)**。其中当前三档的理由是个人使用观察，历史评测与成本分析有单独的适用范围，不能当作这三档的严格对照实验或订阅额度保证。
 
 ## 按需了解更多
 
@@ -81,9 +77,9 @@
 
 ```js
 const presets=[
-  {model:'gpt-5.6-luna',reasoning_effort:'max'},
-  {model:'gpt-5.6-sol',reasoning_effort:'high'},
-  {model:'gpt-6-astra',reasoning_effort:'medium'},
+  {model:'gpt-6-luna',reasoning_effort:'high'},
+  {model:'gpt-6-sol',reasoning_effort:'medium'},
+  {model:'gpt-6-astra',reasoning_effort:'low'},
 ];
 ```
 
