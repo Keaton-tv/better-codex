@@ -34,16 +34,16 @@ Open Terminal on macOS, paste this one line, and press Return:
 (set -o pipefail; curl -fsSL https://raw.githubusercontent.com/Keaton-tv/codex-model-slider/main/install.sh | /bin/bash)
 ```
 
-**Codex-Model-Slider.command** appears on your Desktop. Finish active Codex tasks, double-click it, and wait for **Three presets loaded / 三档已加载**. Then use the native slider. Next time, just double-click the desktop file. Installer and launcher messages are shown in both English and Chinese.
+**Codex-Model-Slider.command** appears on your Desktop with a hidden cache helper beside it. Finish active Codex tasks, double-click it, and wait for **Three presets loaded / 三档已加载**. Then use the native slider. Next time, just double-click the desktop file. Installer and launcher messages are shown in both English and Chinese.
 
 **Requirements:** macOS; the app at `/Applications/ChatGPT.app`; Node.js is checked and prepared automatically, with no manual installation; an account with access to the selected models and reasoning levels. This tool does not unlock models or increase usage limits.
 
 <details>
 <summary><strong>Manual download & launch details</strong></summary>
 
-Alternatively, choose **Code → Download ZIP**, extract it, and double-click [Codex-Model-Slider.command](Codex-Model-Slider.command). To install that copy on your Desktop, type `bash ` in Terminal, drag in the extracted `install.sh`, append ` --local`, and press Return.
+Alternatively, choose **Code → Download ZIP**, extract it, and run [Codex-Model-Slider.command](Codex-Model-Slider.command) from the extracted folder with [cache-indicator.mjs](cache-indicator.mjs) beside it. To install that copy on your Desktop, type `bash ` in Terminal, drag in the extracted `install.sh`, append ` --local`, and press Return.
 
-Installation downloads the launcher and makes it executable. It does not launch or quit the app and needs no `sudo`. An existing file with the same name is never overwritten: move it aside before reinstalling or updating. [Inspect the installer](install.sh).
+Installation downloads the launcher and read-only cache helper. It does not launch or quit the app and needs no `sudo`. Existing slider files are never overwritten: move them aside before reinstalling or updating. [Inspect the installer](install.sh).
 
 If the app is running, you have five seconds to cancel with Ctrl+C before the script requests a normal quit and relaunch. If automatic quitting fails, quit manually with ⌘Q when prompted.
 
@@ -64,6 +64,12 @@ This fork uses these three combinations:
 | **Astra Low** | More demanding work | Stronger model with lighter reasoning |
 
 Choose directly for the task. The positions are not a universal scale of speed, price or capability.
+
+## Cache status beside the composer
+
+After launching through the Desktop file, a compact `Cache ~29m` estimate appears beside the context indicator for local tasks. It reads cache token counts from Codex's local rollout files. A question mark means there is no recent confirmed cache read or write, or the 30-minute minimum window has elapsed. The next actual request confirms whether a prefix was reused. The helper sends no keep-warm messages.
+
+This feature was inspired by [CodexZero's cache indicator](https://github.com/Retro2512/CodexZero). It uses a small background process while the app is open and stops after the app exits. Codex's app files remain unchanged.
 
 ## Under the hood
 
@@ -98,7 +104,7 @@ No ASAR, Info.plist, app source, signature or persistent preset file is modified
 <details>
 <summary><strong>Automatic downloads, file locations & removal</strong></summary>
 
-1. **Desktop installation:** download the launcher from this repository and make it executable. Do not launch the app or overwrite an existing desktop file.
+1. **Desktop installation:** download the launcher and hidden cache helper from this repository. Do not launch the app or overwrite existing slider files.
 2. **Prepare on double-click:** check the fixed app path and a usable Node.js runtime. Download only when no compatible runtime is available.
 3. **Launch when ready:** use the original normal quit/relaunch flow and apply the slider. The five-second cancellation window remains.
 
@@ -106,7 +112,7 @@ On first launch, the script reuses a compatible bundled or local Node.js. If nei
 
 Official archive SHA-256 digests are pinned in the script and checked before extraction or execution. Failed downloads or checksums clean up temporary files and stop before restarting the app; double-click again to retry. The cached runtime is private to this tool, with the official license included.
 
-**Remove:** delete the desktop launcher. If Node.js was automatically downloaded, use Finder → Go to Folder to open `~/Library/Application Support/Codex Model Slider` and remove this tool-specific directory too. Keep any other Node.js installations. Restoring the original slider only requires fully quitting and launching the app normally.
+**Remove:** delete the desktop launcher and `~/Desktop/.Codex-Cache-Indicator.mjs`. If Node.js was automatically downloaded, use Finder → Go to Folder to open `~/Library/Application Support/Codex Model Slider` and remove this tool-specific directory too. Keep any other Node.js installations. Restoring the original slider and removing the cache indicator only requires fully quitting and launching the app normally.
 
 </details>
 
@@ -126,7 +132,7 @@ Official archive SHA-256 digests are pinned in the script and checked before ext
 
 - Unofficial and dependent on internal interfaces. App updates may break it. There is no version, signature or archive fingerprint verification or automatic adaptation.
 - The debugging port is launched with `127.0.0.1` and remains open for that app session. It allows page execution: do not forward it or share it with untrusted programs. Fully quitting the app closes it.
-- The script requires no API key, reads no chat content, and saves no diagnostic logs or session files. The app itself still connects to its services.
+- The script requires no API key, reads local rollout files to find cache token counts, and saves no diagnostic logs or session files. It does not display or send chat content. The app itself still connects to its services.
 - The verified app name, path and slider behavior are preserved; user-facing messages are bilingual. Desktop installation and automatic Node.js preparation are covered by syntax and isolated behavior checks. No fresh live-app relaunch or UI acceptance test was performed.
 
 <details>

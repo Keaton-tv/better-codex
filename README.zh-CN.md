@@ -34,20 +34,24 @@
 (set -o pipefail; curl -fsSL https://raw.githubusercontent.com/Keaton-tv/codex-model-slider/main/install.sh | /bin/bash)
 ```
 
-桌面会出现 **「Codex-Model-Slider.command」**。先结束 Codex 中正在进行的任务，再双击它；等终端显示 **「三档已加载」**，就可以拖动原生滑块切换了。以后只需双击桌面的文件。安装与运行提示均为中英双语。
+桌面会出现 **「Codex-Model-Slider.command」** 和一个隐藏的缓存辅助文件。先结束 Codex 中正在进行的任务，再双击启动脚本；等终端显示 **「三档已加载」**，就可以拖动原生滑块切换了。以后只需双击桌面的文件。安装与运行提示均为中英双语。
 
 **运行条件：** macOS，应用安装在 `/Applications/ChatGPT.app`；Node.js 会自动检查并准备，无需手动安装；账号需要本来就能使用对应模型和强度。脚本不会解锁模型或增加额度。
 
 <details>
 <summary><strong>手动下载与启动说明</strong></summary>
 
-也可以点击 **Code → Download ZIP**，解压后双击 [Codex-Model-Slider.command](Codex-Model-Slider.command)。如果想把它安装到桌面，在终端输入 `bash `，拖入解压目录里的 `install.sh`，再输入 ` --local` 并回车。
+也可以点击 **Code → Download ZIP**，解压后在同一目录保留 [Codex-Model-Slider.command](Codex-Model-Slider.command) 和 [cache-indicator.mjs](cache-indicator.mjs)，再双击启动脚本。如果想把它安装到桌面，在终端输入 `bash `，拖入解压目录里的 `install.sh`，再输入 ` --local` 并回车。
 
-安装命令只下载脚本并设置执行权限，不会启动或退出应用，也不需要 `sudo`。桌面已有同名文件时会停止，避免覆盖你的自定义设置；更新时先把旧文件移走，再运行命令。你可以先[查看安装脚本](install.sh)。
+安装命令下载启动脚本和只读缓存辅助文件，不会启动或退出应用，也不需要 `sudo`。桌面已有同名文件时会停止；更新时先把旧文件移走，再运行命令。你可以先[查看安装脚本](install.sh)。
 
 如果 Codex 正在运行，脚本会先等待 5 秒，期间可以按 Ctrl+C 取消，再请求正常退出并重启。若自动退出失败，按提示切回 Codex，按 ⌘Q。
 
 </details>
+
+## 输入框旁边的缓存状态
+
+通过桌面启动脚本打开应用后，本地任务的上下文指示器旁边会显示类似 `Cache ~29m` 的估计值。辅助程序读取本地任务记录中的缓存 token 数。显示问号表示没有近期确认的缓存读取或写入，或者 30 分钟的最低缓存期限已经过去。下一次真实请求才能确认缓存是否复用。辅助程序不会发送保温消息。灵感来自 [CodexZero 的缓存指示器](https://github.com/Retro2512/CodexZero)。
 
 ## 为什么做这个项目？
 
@@ -109,7 +113,7 @@ const presets=[
 
 官方安装包的 SHA-256 校验值固定在脚本中，校验通过后才解压和使用。下载或校验失败会清理临时文件并停止，应用不会被重启；下次双击会重试。下载的运行环境只供本工具使用，官方许可证会一并保存。
 
-**清理：** 删除桌面的 `Codex-Model-Slider.command` 即可移除启动入口。如果曾自动下载 Node.js，还可在 Finder「前往文件夹」中输入 `~/Library/Application Support/Codex Model Slider`，删除这个工具专用目录。不要删除你已有的其他 Node.js 安装。恢复原生滑块只需完全退出应用后正常打开。
+**清理：** 删除桌面的 `Codex-Model-Slider.command` 和 `~/Desktop/.Codex-Cache-Indicator.mjs`。如果曾自动下载 Node.js，还可在 Finder「前往文件夹」中输入 `~/Library/Application Support/Codex Model Slider`，删除这个工具专用目录。不要删除你已有的其他 Node.js 安装。恢复原生滑块只需完全退出应用后正常打开。
 
 </details>
 
@@ -129,7 +133,7 @@ const presets=[
 
 - 这是非官方工具，依赖应用内部接口，没有官方兼容性承诺。应用更新后可能失效，当前未提供版本、签名或归档指纹校验，也不自动适配。
 - 调试端口按本机地址 `127.0.0.1` 启动，在该次应用运行期间保持开启并具有页面执行能力；不要转发端口或交给不可信程序，完全退出应用后关闭。
-- 脚本不要求 API key，不读取聊天内容、不保存诊断日志或会话文件；应用自身仍会正常联网。
+- 脚本不要求 API key，会读取本地任务记录以获取缓存 token 数，但不显示或发送聊天内容，也不保存诊断日志或会话文件；应用自身仍会正常联网。
 - 保留原脚本的应用名称、路径和滑块行为，增加桌面安装、Node.js 自动准备及中英双语提示。已完成语法检查、隔离安装和运行环境准备测试；未重新进行应用重启或界面验收。
 
 <details>

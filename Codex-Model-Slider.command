@@ -81,8 +81,15 @@ trap 'exit 143' TERM
   exit 1
 }
 prepare_node
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+HELPER="$SCRIPT_DIR/.Codex-Cache-Indicator.mjs"
+[ -f "$HELPER" ] || HELPER="$SCRIPT_DIR/cache-indicator.mjs"
+[ -f "$HELPER" ] || {
+  printf '%s\n' 'Missing cache-indicator.mjs beside the launcher.' >&2
+  exit 1
+}
 
-"$NODE" --input-type=module - <<'JS'
+CODEX_SLIDER_CACHE_HELPER="$HELPER" "$NODE" --input-type=module - <<'JS'
 import {spawn, execFileSync as run} from 'node:child_process';
 import net from 'node:net';
 const app='/Applications/ChatGPT.app/Contents/MacOS/ChatGPT';
@@ -145,5 +152,8 @@ try{
     }catch{}
   }
   console.log(loaded?'Three presets loaded / 三档已加载：Luna High → Sol Medium → Astra Low':'Loading failed; this app version may be incompatible. Fully quit and launch Codex normally. / 加载失败；当前版本可能不兼容。完全退出后可正常启动 Codex。');
+  const monitor=spawn(process.execPath,[process.env.CODEX_SLIDER_CACHE_HELPER,String(port)],{detached:true,stdio:'ignore'});
+  await new Promise((resolve,reject)=>{monitor.once('spawn',resolve);monitor.once('error',reject);});
+  monitor.unref();
 }catch(e){console.error("Launch failed / 启动失败:",e.message);process.exitCode=1;}
 JS
