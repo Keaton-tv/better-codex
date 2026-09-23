@@ -2,8 +2,12 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { spawn } from "node:child_process";
+import readline from "node:readline";
 
 const CACHE_MS = 30 * 60_000;
+const USAGE_REFRESH_MS = 2 * 60_000;
+const CODEX_CLI = "/Applications/ChatGPT.app/Contents/Resources/codex";
 const SESSION_ROOT = path.join(process.env.CODEX_HOME || path.join(os.homedir(), ".codex"), "sessions");
 const UUID = /\/local\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\/|$)/i;
 const filesByThread = new Map();
@@ -53,6 +57,45 @@ export function statusLabel(snapshot) {
     return { text: "Cache ?", title: "The 30-minute minimum cache window has elapsed. The server may retain it longer; the next request confirms reuse." };
   }
   return { text: "Cache ?", title: "No recent cache read or write was observed for this local task." };
+}
+
+export function weeklyUsageLabel(response) {
+  const bucket = response?.rateLimitsByLimitId?.codex ?? response?.rateLimits;
+  const window = [bucket?.primary, bucket?.secondary].find(value => value?.windowDurationMins === 7 * 24 * 60);
+  const used = window?.usedPercent;
+  if (typeof used !== "number" || !Number.isFinite(used)) return null;
+  const remaining = Math.round(Math.max(0, Math.min(100, 100 - used)));
+  const reset = Number.isFinite(window.resetsAt) ? new Date(window.resetsAt * 1000).toLocaleString() : null;
+  return { text: `${remaining}% left`, title: `Weekly Codex usage: ${remaining}% left${reset ? `. Resets ${reset}` : ""}.` };
+}
+
+export function readWeeklyUsage() {
+  return new Promise(resolve => {
+    const child = spawn(CODEX_CLI, ["app-server", "--stdio"], { stdio: ["pipe", "pipe", "ignore"] });
+    let settled = false;
+    const finish = value => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      child.kill();
+      resolve(value);
+    };
+    const timer = setTimeout(() => finish(null), 10_000);
+    child.on("error", () => finish(null));
+    child.on("exit", () => finish(null));
+    child.stdin.on("error", () => finish(null));
+    readline.createInterface({ input: child.stdout }).on("line", line => {
+      let message;
+      try { message = JSON.parse(line); } catch { return; }
+      if (message.id === 1 && message.result) {
+        child.stdin.write(`${JSON.stringify({ method: "initialized" })}\n`);
+        child.stdin.write(`${JSON.stringify({ id: 2, method: "account/rateLimits/read", params: { excludeResetCreditDetails: true } })}\n`);
+      } else if (message.id === 2) {
+        finish(weeklyUsageLabel(message.result));
+      }
+    });
+    child.stdin.write(`${JSON.stringify({ id: 1, method: "initialize", params: { clientInfo: { name: "better-codex", version: "1.0" }, capabilities: {} } })}\n`);
+  });
 }
 
 async function discoverFiles(id) {
@@ -114,29 +157,39 @@ async function currentSnapshot(id) {
   return { state: "unknown" };
 }
 
-function showCacheStatus(status) {
+function showStatuses(status, usage) {
   const anchor = document.querySelector('span[role="img"][aria-label^="Context usage:"]');
-  const old = document.querySelector('[data-keaton-cache-status]');
-  if (!status.text) { old?.remove(); return true; }
-  if (!anchor) { old?.remove(); return false; }
-  const badge = old || document.createElement("span");
-  badge.dataset.keatonCacheStatus = "true";
-  badge.textContent = status.text;
-  badge.title = status.title;
-  badge.setAttribute("aria-label", `${status.text}. ${status.title}`);
-  badge.style.cssText = "font-size:11px;line-height:18px;white-space:nowrap;opacity:.72;margin-left:6px;color:inherit";
-  const parent = anchor.parentElement;
-  if (parent?.parentElement && badge.previousElementSibling !== parent) parent.insertAdjacentElement("afterend", badge);
+  if (!anchor) {
+    document.querySelector('[data-keaton-cache-status]')?.remove();
+    document.querySelector('[data-keaton-weekly-usage]')?.remove();
+    return false;
+  }
+  let previous = anchor.parentElement;
+  for (const [key, value, icon] of [
+    ["keatonCacheStatus", status, ""],
+    ["keatonWeeklyUsage", usage, "◷ "],
+  ]) {
+    const old = document.querySelector(`[data-${key === "keatonCacheStatus" ? "keaton-cache-status" : "keaton-weekly-usage"}]`);
+    if (!value?.text) { old?.remove(); continue; }
+    const badge = old || document.createElement("span");
+    badge.dataset[key] = "true";
+    badge.textContent = icon + value.text;
+    badge.title = value.title;
+    badge.setAttribute("aria-label", value.title);
+    badge.style.cssText = "font-size:11px;line-height:18px;white-space:nowrap;opacity:.72;margin-left:6px;color:inherit";
+    if (previous?.parentElement && badge.previousElementSibling !== previous) previous.insertAdjacentElement("afterend", badge);
+    previous = badge;
+  }
   return true;
 }
 
-async function evaluate(page, status) {
+async function evaluate(page, status, usage) {
   const ws = new WebSocket(page.webSocketDebuggerUrl);
   return new Promise(resolve => {
     const timer = setTimeout(() => { ws.close(); resolve(false); }, 3000);
     ws.onerror = () => { clearTimeout(timer); resolve(false); };
     ws.onopen = () => ws.send(JSON.stringify({ id: 1, method: "Runtime.evaluate", params: {
-      expression: `(${showCacheStatus})(${JSON.stringify(status)})`, returnByValue: true
+      expression: `(${showStatuses})(${JSON.stringify(status)},${JSON.stringify(usage)})`, returnByValue: true
     }}));
     ws.onmessage = event => {
       const result = JSON.parse(event.data);
@@ -150,14 +203,20 @@ async function evaluate(page, status) {
 
 async function monitor(port) {
   let failures = 0;
+  let usage = null;
+  let nextUsageRead = 0;
   while (failures < 6) {
+    if (Date.now() >= nextUsageRead) {
+      usage = await readWeeklyUsage();
+      nextUsageRead = Date.now() + USAGE_REFRESH_MS;
+    }
     try {
       const pages = await fetch(`http://127.0.0.1:${port}/json/list`, { signal: AbortSignal.timeout(2000) }).then(r => r.json());
       failures = 0;
       for (const page of pages) {
         if (page.type !== "page" || !page.url.startsWith("app://-/") || !page.webSocketDebuggerUrl) continue;
         const id = page.url.match(UUID)?.[1];
-        await evaluate(page, id ? statusLabel(await currentSnapshot(id)) : { text: "", title: "" });
+        await evaluate(page, id ? statusLabel(await currentSnapshot(id)) : { text: "", title: "" }, usage);
       }
     } catch { failures++; }
     await new Promise(resolve => setTimeout(resolve, 5000));

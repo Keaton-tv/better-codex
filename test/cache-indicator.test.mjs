@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readRolloutTail, statusLabel } from "../cache-indicator.mjs";
+import { readRolloutTail, statusLabel, weeklyUsageLabel } from "../cache-indicator.mjs";
 
 const at = Date.parse("2026-09-23T10:00:00.000Z");
 const line = (type, payload, timestamp = new Date(at).toISOString()) =>
@@ -32,4 +32,14 @@ test("duplicate cumulative usage does not refresh the observation", () => {
   const rollout = [context("gpt-6-luna"), usage(10_000, 8_000, 10_000),
     usage(10_000, 8_000, 10_000)].join("\n");
   assert.equal(readRolloutTail(rollout, at + 29 * 60_000).remainingMs, 60_000);
+});
+
+test("shows the remaining weekly Codex limit and ignores other windows", () => {
+  const response = { rateLimitsByLimitId: { codex: {
+    primary: { usedPercent: 32, windowDurationMins: 10080, resetsAt: null },
+    secondary: { usedPercent: 90, windowDurationMins: 300, resetsAt: null }
+  } } };
+  assert.equal(weeklyUsageLabel(response).text, "68% left");
+  assert.equal(weeklyUsageLabel({ rateLimits: { primary: { usedPercent: 99, windowDurationMins: 300 } } }), null);
+  assert.equal(weeklyUsageLabel({ rateLimits: { secondary: { usedPercent: 200, windowDurationMins: 10080 } } }).text, "0% left");
 });

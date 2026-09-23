@@ -65,11 +65,13 @@ This fork uses these three combinations:
 
 Choose directly for the task. The positions are not a universal scale of speed, price or capability.
 
-## Cache status beside the composer
+## Cache and weekly usage beside the composer
 
 After launching through the Desktop file, a compact `Cache ~29m` estimate appears beside the context indicator for local tasks. It reads cache token counts from Codex's local rollout files. A question mark means there is no recent confirmed cache read or write, or the 30-minute minimum window has elapsed. The next actual request confirms whether a prefix was reused. The helper sends no keep-warm messages.
 
 This feature was inspired by [CodexZero's cache indicator](https://github.com/Retro2512/CodexZero). It uses a small background process while the app is open and stops after the app exits. Codex's app files remain unchanged.
+
+The same helper shows a `◷ 68% left` badge for the account's weekly Codex limit. It reads the percentage from the Codex app server every two minutes. Hover for the reset time. If the weekly limit is unavailable, the badge is hidden.
 
 ## Under the hood
 
@@ -132,7 +134,7 @@ Official archive SHA-256 digests are pinned in the script and checked before ext
 
 - Unofficial and dependent on internal interfaces. App updates may break it. There is no version, signature or archive fingerprint verification or automatic adaptation.
 - The debugging port is launched with `127.0.0.1` and remains open for that app session. It allows page execution: do not forward it or share it with untrusted programs. Fully quitting the app closes it.
-- The script requires no API key, reads local rollout files to find cache token counts, and saves no diagnostic logs or session files. It does not display or send chat content. The app itself still connects to its services.
+- The script requires no API key. It reads local rollout files for cache token counts and asks the bundled Codex app server for the account's weekly usage percentage. It saves no diagnostic logs or session files and does not display or send chat content. The app itself still connects to its services.
 - The verified app name, path and slider behavior are preserved; user-facing messages are bilingual. Desktop installation and automatic Node.js preparation are covered by syntax and isolated behavior checks. No fresh live-app relaunch or UI acceptance test was performed.
 
 <details>
