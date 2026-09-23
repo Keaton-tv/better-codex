@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readRolloutTail, statusLabel, weeklyUsageLabel } from "../cache-indicator.mjs";
+import { readRolloutTail, statusLabel, weeklyUsageLabel, installPresets } from "../cache-indicator.mjs";
 
 const at = Date.parse("2026-09-23T10:00:00.000Z");
 const line = (type, payload, timestamp = new Date(at).toISOString()) =>
@@ -42,4 +42,35 @@ test("shows the remaining weekly Codex limit and ignores other windows", () => {
   assert.equal(weeklyUsageLabel(response).text, "68% left");
   assert.equal(weeklyUsageLabel({ rateLimits: { primary: { usedPercent: 99, windowDurationMins: 300 } } }), null);
   assert.equal(weeklyUsageLabel({ rateLimits: { secondary: { usedPercent: 200, windowDurationMins: 10080 } } }).text, "0% left");
+});
+
+test("loads saved slider stops and applies edits immediately", () => {
+  const previousStorage = globalThis.localStorage;
+  const previousStatsig = globalThis.__STATSIG__;
+  const previousControl = globalThis.__betterCodexPresetControl;
+  const events = [];
+  const client = {
+    getDynamicConfig: () => ({ value: {}, get: () => null }),
+    $emt: event => events.push(event.name),
+  };
+  const saved = { presets: [
+    { model: "gpt-6-astra", reasoning_effort: "high" },
+    { model: "gpt-6-sol", reasoning_effort: "medium" },
+    { model: "gpt-6-luna", reasoning_effort: "low" },
+  ] };
+  try {
+    globalThis.localStorage = { getItem: () => JSON.stringify(saved) };
+    globalThis.__STATSIG__ = { firstInstance: client };
+    delete globalThis.__betterCodexPresetControl;
+    assert.equal(installPresets(), true);
+    assert.deepEqual(client.getDynamicConfig("423260384").get("presets"), [saved.presets]);
+    const next = saved.presets.map((p, i) => i === 0 ? { ...p, reasoning_effort: "low" } : p);
+    globalThis.__betterCodexPresetControl.set(next);
+    assert.deepEqual(client.getDynamicConfig("423260384").get("presets"), [next]);
+    assert.deepEqual(events, ["values_updated", "values_updated"]);
+  } finally {
+    globalThis.localStorage = previousStorage;
+    globalThis.__STATSIG__ = previousStatsig;
+    globalThis.__betterCodexPresetControl = previousControl;
+  }
 });

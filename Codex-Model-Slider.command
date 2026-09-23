@@ -7,7 +7,7 @@ node_usable() {
     'process.exit(Number(process.versions.node.split(".")[0]) >= 22 && typeof WebSocket === "function" && typeof fetch === "function" && typeof AbortSignal.timeout === "function" ? 0 : 1)' >/dev/null 2>&1
 }
 
-# Runtime setup only; the original app path and embedded slider code stay unchanged.
+# Prepare a compatible Node.js runtime without changing the installed app.
 # Reuse a working bundled/PATH runtime (Node >=22 with required web APIs).
 # Otherwise fetch pinned official Node.js, verify its published SHA-256 before
 # extraction/execution, and cache it under the current user's Application Support.
@@ -92,28 +92,11 @@ HELPER="$SCRIPT_DIR/.Codex-Cache-Indicator.mjs"
 CODEX_SLIDER_CACHE_HELPER="$HELPER" "$NODE" --input-type=module - <<'JS'
 import {spawn, execFileSync as run} from 'node:child_process';
 import net from 'node:net';
+import {pathToFileURL} from 'node:url';
 const app='/Applications/ChatGPT.app/Contents/MacOS/ChatGPT';
-const presets=[
-  {model:'gpt-6-luna',reasoning_effort:'high'},
-  {model:'gpt-6-sol',reasoning_effort:'medium'},
-  {model:'gpt-6-astra',reasoning_effort:'low'},
-];
+const {installPresets}=await import(pathToFileURL(process.env.CODEX_SLIDER_CACHE_HELPER).href);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const running=()=>run('/bin/ps',['-axo','comm='],{encoding:'utf8'}).split('\n').some(s=>s.trim()===app);
-function inject(presets){
-  const c=globalThis.__STATSIG__?.firstInstance;
-  if(!c)return false;
-  if(globalThis.__threePresets)return true;
-  const original=c.getDynamicConfig;
-  c.getDynamicConfig=function(id,...args){
-    const value=original.call(this,id,...args);
-    return id==='423260384'?{...value,value:{...value.value,presets:[presets]},
-      get:(key,fallback)=>key==='presets'?[presets]:value.get(key,fallback)}:value;
-  };
-  c.$emt({name:'values_updated'});
-  globalThis.__threePresets=true;
-  return true;
-}
 async function apply(url){
   const ws=new WebSocket(url);
   return new Promise(resolve=>{
@@ -121,7 +104,7 @@ async function apply(url){
     const timer=setTimeout(()=>done(false),3000);
     ws.onerror=()=>done(false);
     ws.onopen=()=>ws.send(JSON.stringify({id:1,method:'Runtime.evaluate',params:{
-      expression:`(${inject})(${JSON.stringify(presets)})`,returnByValue:true}}));
+      expression:`(${installPresets})()`,returnByValue:true}}));
     ws.onmessage=e=>{const r=JSON.parse(e.data);if(r.id===1)done(r.result?.result?.value===true);};
   });
 }
@@ -151,7 +134,7 @@ try{
       }
     }catch{}
   }
-  console.log(loaded?'Three presets loaded / 三档已加载：Luna High → Sol Medium → Astra Low':'Loading failed; this app version may be incompatible. Fully quit and launch Codex normally. / 加载失败；当前版本可能不兼容。完全退出后可正常启动 Codex。');
+  console.log(loaded?'Better Codex loaded / Better Codex 已加载':'Loading failed; this app version may be incompatible. Fully quit and launch Codex normally. / 加载失败；当前版本可能不兼容。完全退出后可正常启动 Codex。');
   const monitor=spawn(process.execPath,[process.env.CODEX_SLIDER_CACHE_HELPER,String(port)],{detached:true,stdio:'ignore'});
   await new Promise((resolve,reject)=>{monitor.once('spawn',resolve);monitor.once('error',reject);});
   monitor.unref();

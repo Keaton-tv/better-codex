@@ -34,7 +34,7 @@ Open Terminal on macOS, paste this one line, and press Return:
 (set -o pipefail; curl -fsSL https://raw.githubusercontent.com/Keaton-tv/better-codex/main/install.sh | /bin/bash)
 ```
 
-**Codex-Model-Slider.command** appears on your Desktop with a hidden cache helper beside it. Finish active Codex tasks, double-click it, and wait for **Three presets loaded / 三档已加载**. Then use the native slider. Next time, just double-click the desktop file. Installer and launcher messages are shown in both English and Chinese.
+**Codex-Model-Slider.command** appears on your Desktop with a hidden helper beside it. Finish active Codex tasks, double-click it, and wait for **Better Codex loaded / Better Codex 已加载**. Then use the native slider and **Settings → Better Codex**. Next time, just double-click the desktop file. Installer and launcher messages are shown in both English and Chinese.
 
 **Requirements:** macOS; the app at `/Applications/ChatGPT.app`; Node.js is checked and prepared automatically, with no manual installation; an account with access to the selected models and reasoning levels. This tool does not unlock models or increase usage limits.
 
@@ -43,7 +43,7 @@ Open Terminal on macOS, paste this one line, and press Return:
 
 Alternatively, choose **Code → Download ZIP**, extract it, and run [Codex-Model-Slider.command](Codex-Model-Slider.command) from the extracted folder with [cache-indicator.mjs](cache-indicator.mjs) beside it. To install that copy on your Desktop, type `bash ` in Terminal, drag in the extracted `install.sh`, append ` --local`, and press Return.
 
-Installation downloads the launcher and read-only cache helper. It does not launch or quit the app and needs no `sudo`. Existing slider files are never overwritten: move them aside before reinstalling or updating. [Inspect the installer](install.sh).
+Installation downloads the launcher and settings helper. It does not launch or quit the app and needs no `sudo`. Existing slider files are never overwritten: move them aside before reinstalling or updating. [Inspect the installer](install.sh).
 
 If the app is running, you have five seconds to cancel with Ctrl+C before the script requests a normal quit and relaunch. If automatic quitting fails, quit manually with ⌘Q when prompted.
 
@@ -73,31 +73,25 @@ This feature was inspired by [CodexZero's cache indicator](https://github.com/Re
 
 The same helper shows a `◷ 68% left` badge for the account's weekly Codex limit. It reads the percentage from the Codex app server every two minutes. Hover for the reset time. If the weekly limit is unavailable, the badge is hidden.
 
+## Better Codex settings
+
+Open **Settings → Better Codex** after launching through the Desktop file. Choose the model and reasoning effort for each of the slider's three stops, and switch the **Cache status** and **Weekly usage** badges on or off independently. Changes apply immediately and are saved in the app's local storage for later Better Codex launches. The menu includes GPT-6 Luna, Sol and Astra, plus GPT-5.6 Luna and Sol; Codex still determines which models your account can use.
+
 ## Under the hood
 
 <details>
 <summary><strong>Customize your presets</strong></summary>
 
-Edit `presets` near the top of `Codex-Model-Slider.command`, keep three supported combinations, then launch again:
-
-```js
-const presets=[
-  {model:'gpt-6-luna',reasoning_effort:'high'},
-  {model:'gpt-6-sol',reasoning_effort:'medium'},
-  {model:'gpt-6-astra',reasoning_effort:'low'},
-];
-```
-
-Use IDs and reasoning levels supported by your account and client. The terminal success message has fixed preset names; update those too if desired.
+Open **Settings → Better Codex** and change any of the three stops. The defaults are Luna High, Sol Medium and Astra Low. The app still decides which choices your account supports.
 
 </details>
 
 <details>
 <summary><strong>How it works & restore defaults</strong></summary>
 
-The script launches the official app with a temporary local debugging port, connects to its `app://-/` UI over the Chromium DevTools Protocol (CDP), wraps the in-memory Statsig `getDynamicConfig` method, replaces only `presets` in config `423260384`, and emits `values_updated`. The app still handles selection, setting persistence and availability checks.
+The script launches the official app with a temporary local debugging port, connects to its `app://-/` UI over the Chromium DevTools Protocol (CDP), wraps the in-memory Statsig `getDynamicConfig` method, replaces only `presets` in config `423260384`, and emits `values_updated`. The helper adds the Better Codex settings panel and composer badges to the web view. The app still handles model selection and availability checks.
 
-No ASAR, Info.plist, app source, signature or persistent preset file is modified. A page reload or app exit removes the override.
+No ASAR, Info.plist, app source or signature is modified. Settings are saved under `better-codex.settings.v1` in the app's local storage. Launching Codex normally leaves the saved choices in place but does not apply this UI override.
 
 **To restore the original slider, fully quit the app and launch it normally from the Dock.** The app may retain the model you selected; restoring the slider does not reset conversation settings.
 

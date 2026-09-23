@@ -69,6 +69,212 @@ export function weeklyUsageLabel(response) {
   return { text: `${remaining}% left`, title: `Weekly Codex usage: ${remaining}% left${reset ? `. Resets ${reset}` : ""}.` };
 }
 
+// These two functions run in the Codex web view through the local debugger.
+// Keep them self-contained: function source is sent to Runtime.evaluate.
+export function installPresets() {
+  const key = "better-codex.settings.v1";
+  const defaults = [
+    { model: "gpt-6-luna", reasoning_effort: "high" },
+    { model: "gpt-6-sol", reasoning_effort: "medium" },
+    { model: "gpt-6-astra", reasoning_effort: "low" },
+  ];
+  const models = new Set(["gpt-6-luna", "gpt-6-sol", "gpt-6-astra", "gpt-5.6-luna", "gpt-5.6-sol"]);
+  const efforts = new Set(["low", "medium", "high", "xhigh", "max", "ultra"]);
+  let saved;
+  try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch {}
+  const presets = Array.isArray(saved?.presets) && saved.presets.length === 3 &&
+    saved.presets.every(p => models.has(p?.model) && efforts.has(p?.reasoning_effort) && !(p.model.endsWith("luna") && p.reasoning_effort === "ultra"))
+    ? saved.presets : defaults;
+  const client = globalThis.__STATSIG__?.firstInstance;
+  if (!client) return false;
+  if (globalThis.__betterCodexPresetControl?.client === client) {
+    globalThis.__betterCodexPresetControl.set(presets);
+    return true;
+  }
+  const original = client.getDynamicConfig;
+  const control = {
+    client,
+    presets,
+    set(next) {
+      if (JSON.stringify(this.presets) === JSON.stringify(next)) return;
+      this.presets = next.map(p => ({ ...p }));
+      client.$emt({ name: "values_updated" });
+    },
+  };
+  client.getDynamicConfig = function(id, ...args) {
+    const value = original.call(this, id, ...args);
+    return id === "423260384" ? {
+      ...value,
+      value: { ...value.value, presets: [control.presets] },
+      get: (name, fallback) => name === "presets" ? [control.presets] : value.get(name, fallback),
+    } : value;
+  };
+  globalThis.__betterCodexPresetControl = control;
+  client.$emt({ name: "values_updated" });
+  return true;
+}
+
+export function renderBetterCodexSettings() {
+  const key = "better-codex.settings.v1";
+  const oldPanel = document.querySelector("[data-better-codex-panel]");
+  if (!location.pathname.startsWith("/settings")) {
+    oldPanel?.remove();
+    globalThis.__betterCodexSettingsOpen = false;
+    return false;
+  }
+  if (globalThis.__betterCodexSettingsOpen && globalThis.__betterCodexOpenPath !== location.pathname) {
+    globalThis.__betterCodexSettingsOpen = false;
+  }
+  const sidebar = document.querySelector(".sidebar-navigation");
+  const worktrees = sidebar?.querySelector('[data-settings-panel-slug="worktrees"]');
+  if (!sidebar || !worktrees) return false;
+  let nav = sidebar.querySelector("[data-better-codex-nav]");
+  if (!nav) {
+    const wrapper = worktrees.parentElement.cloneNode(true);
+    nav = wrapper.querySelector("[data-settings-panel-slug]") || wrapper;
+    nav.removeAttribute("data-settings-panel-slug");
+    nav.dataset.betterCodexNav = "true";
+    nav.setAttribute("aria-label", "Better Codex");
+    const icon = nav.querySelector("svg");
+    if (icon) {
+      icon.setAttribute("viewBox", "0 0 24 24");
+      icon.innerHTML = '<path d="m12 2 1.8 7.2L21 11l-7.2 1.8L12 20l-1.8-7.2L3 11l7.2-1.8L12 2Zm7 14 .6 2.4L22 19l-2.4.6L19 22l-.6-2.4L16 19l2.4-.6L19 16Z" fill="currentColor"/>';
+    }
+    const walker = document.createTreeWalker(nav, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      if (walker.currentNode.textContent.trim() === "Worktrees") {
+        walker.currentNode.textContent = "Better Codex";
+        break;
+      }
+    }
+    nav.addEventListener("click", event => {
+      event.preventDefault();
+      event.stopPropagation();
+      globalThis.__betterCodexSettingsOpen = true;
+      globalThis.__betterCodexOpenPath = location.pathname;
+      renderBetterCodexSettings();
+    });
+    worktrees.parentElement.insertAdjacentElement("afterend", wrapper);
+    if (!sidebar.dataset.betterCodexWatch) {
+      sidebar.dataset.betterCodexWatch = "true";
+      sidebar.addEventListener("click", event => {
+        if (event.target.closest("[data-better-codex-nav]")) return;
+        if (event.target.closest("[data-settings-panel-slug]")) {
+          globalThis.__betterCodexSettingsOpen = false;
+          document.querySelector("[data-better-codex-panel]")?.remove();
+        }
+      }, true);
+    }
+  }
+  if (!globalThis.__betterCodexSettingsOpen) {
+    nav.removeAttribute("aria-current");
+    nav.style.removeProperty("background-color");
+    oldPanel?.remove();
+    return true;
+  }
+  nav.setAttribute("aria-current", "page");
+  nav.style.backgroundColor = "#3a3a3a";
+  const rect = sidebar.getBoundingClientRect();
+  const compact = rect.right > window.innerWidth * .6;
+  const panel = oldPanel || document.createElement("section");
+  panel.dataset.betterCodexPanel = "true";
+  panel.style.cssText = `position:fixed;z-index:9999;top:0;right:0;bottom:0;left:${compact ? 0 : Math.round(rect.right)}px;overflow:auto;background:#1f1f1f;color:#f4f4f4;font-family:inherit`;
+  if (oldPanel) {
+    oldPanel.querySelector("[data-better-codex-back]").style.display = compact ? "block" : "none";
+    return true;
+  }
+  panel.innerHTML = `<div style="max-width:760px;margin:0 auto;padding:48px 48px 80px">
+    <button data-better-codex-back style="display:${compact ? "block" : "none"};background:none;border:0;color:inherit;font:inherit;padding:0;margin:0 0 28px;cursor:pointer">← Back to settings</button>
+    <h1 style="font-size:28px;font-weight:600;margin:0 0 8px">Better Codex</h1>
+    <p style="color:#aaa;margin:0 0 40px">Choose your power slider presets and composer indicators.</p>
+    <h2 style="font-size:18px;font-weight:600;margin:0 0 14px">Power slider</h2>
+    <div data-better-codex-presets style="display:grid;gap:12px;margin-bottom:36px"></div>
+    <h2 style="font-size:18px;font-weight:600;margin:0 0 14px">Composer indicators</h2>
+    <div data-better-codex-toggles style="display:grid;gap:12px"></div>
+    <p style="color:#888;font-size:12px;margin-top:32px">These settings apply to this Mac when Codex is launched through Better Codex.</p>
+  </div>`;
+  document.body.appendChild(panel);
+  panel.querySelector("[data-better-codex-back]").addEventListener("click", () => {
+    globalThis.__betterCodexSettingsOpen = false;
+    panel.remove();
+  });
+  const defaultPresets = [
+    { model: "gpt-6-luna", reasoning_effort: "high" },
+    { model: "gpt-6-sol", reasoning_effort: "medium" },
+    { model: "gpt-6-astra", reasoning_effort: "low" },
+  ];
+  const modelOptions = [
+    ["gpt-6-luna", "GPT-6 Luna"], ["gpt-6-sol", "GPT-6 Sol"], ["gpt-6-astra", "GPT-6 Astra"],
+    ["gpt-5.6-luna", "GPT-5.6 Luna"], ["gpt-5.6-sol", "GPT-5.6 Sol"],
+  ];
+  const effortOptions = ["low", "medium", "high", "xhigh", "max", "ultra"];
+  let saved;
+  try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch {}
+  const config = {
+    presets: Array.isArray(saved?.presets) && saved.presets.length === 3
+      ? saved.presets.map((p, i) => modelOptions.some(([id]) => id === p?.model) && effortOptions.includes(p?.reasoning_effort) && !(p.model.endsWith("luna") && p.reasoning_effort === "ultra") ? p : defaultPresets[i])
+      : defaultPresets,
+    showCache: saved?.showCache !== false,
+    showWeekly: saved?.showWeekly !== false,
+  };
+  const save = () => {
+    localStorage.setItem(key, JSON.stringify(config));
+    globalThis.__betterCodexPresetControl?.set(config.presets.map(p => ({ ...p })));
+  };
+  const select = (options, value) => {
+    const element = document.createElement("select");
+    element.style.cssText = "background:#303030;color:inherit;border:1px solid #555;border-radius:8px;padding:8px 10px;font:inherit;min-width:150px";
+    for (const [id, label] of options) {
+      const option = document.createElement("option");
+      option.value = id;
+      option.textContent = label;
+      element.appendChild(option);
+    }
+    element.value = value;
+    return element;
+  };
+  config.presets.forEach((preset, index) => {
+    const row = document.createElement("div");
+    row.style.cssText = "display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#292929;border:1px solid #3b3b3b;border-radius:12px;padding:14px 16px";
+    const label = document.createElement("span");
+    label.textContent = `Stop ${index + 1}`;
+    label.style.cssText = "min-width:70px;color:#bbb";
+    const model = select(modelOptions, preset.model);
+    const effort = select(effortOptions.map(id => [id, id[0].toUpperCase() + id.slice(1)]), preset.reasoning_effort);
+    effort.querySelector('[value="ultra"]').disabled = preset.model.endsWith("luna");
+    model.setAttribute("aria-label", `Stop ${index + 1} model`);
+    effort.setAttribute("aria-label", `Stop ${index + 1} reasoning effort`);
+    model.addEventListener("change", () => {
+      config.presets[index] = { ...config.presets[index], model: model.value };
+      const allowUltra = !model.value.endsWith("luna");
+      for (const option of effort.options) if (option.value === "ultra") option.disabled = !allowUltra;
+      if (!allowUltra && effort.value === "ultra") { effort.value = "max"; config.presets[index].reasoning_effort = "max"; }
+      save();
+    });
+    effort.addEventListener("change", () => { config.presets[index] = { ...config.presets[index], reasoning_effort: effort.value }; save(); });
+    row.append(label, model, effort);
+    panel.querySelector("[data-better-codex-presets]").appendChild(row);
+  });
+  for (const [property, label, detail] of [
+    ["showCache", "Cache status", "Show the cache estimate beside the composer."],
+    ["showWeekly", "Weekly usage", "Show the percentage of your weekly Codex limit left."],
+  ]) {
+    const row = document.createElement("label");
+    row.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:18px;background:#292929;border:1px solid #3b3b3b;border-radius:12px;padding:14px 16px;cursor:pointer";
+    const copy = document.createElement("span");
+    copy.innerHTML = `<strong style="display:block;font-weight:500">${label}</strong><small style="display:block;color:#aaa;margin-top:3px">${detail}</small>`;
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = config[property];
+    input.setAttribute("aria-label", label);
+    input.style.cssText = "width:20px;height:20px;accent-color:#339cff;cursor:pointer";
+    input.addEventListener("change", () => { config[property] = input.checked; save(); });
+    row.append(copy, input);
+    panel.querySelector("[data-better-codex-toggles]").appendChild(row);
+  }
+  return true;
+}
+
 export function readWeeklyUsage() {
   return new Promise(resolve => {
     const child = spawn(CODEX_CLI, ["app-server", "--stdio"], { stdio: ["pipe", "pipe", "ignore"] });
@@ -158,6 +364,10 @@ async function currentSnapshot(id) {
 }
 
 function showStatuses(status, usage) {
+  let settings;
+  try { settings = JSON.parse(localStorage.getItem("better-codex.settings.v1") || "null"); } catch {}
+  if (settings?.showCache === false) status = null;
+  if (settings?.showWeekly === false) usage = null;
   const anchor = document.querySelector('span[role="img"][aria-label^="Context usage:"]');
   if (!anchor) {
     document.querySelector('[data-keaton-cache-status]')?.remove();
@@ -189,7 +399,7 @@ async function evaluate(page, status, usage) {
     const timer = setTimeout(() => { ws.close(); resolve(false); }, 3000);
     ws.onerror = () => { clearTimeout(timer); resolve(false); };
     ws.onopen = () => ws.send(JSON.stringify({ id: 1, method: "Runtime.evaluate", params: {
-      expression: `(${showStatuses})(${JSON.stringify(status)},${JSON.stringify(usage)})`, returnByValue: true
+      expression: `(()=>{let ok=false;try{ok=(${installPresets})()||ok}catch{}try{ok=(${renderBetterCodexSettings})()||ok}catch{}try{ok=(${showStatuses})(${JSON.stringify(status)},${JSON.stringify(usage)})||ok}catch{}return ok})()`, returnByValue: true
     }}));
     ws.onmessage = event => {
       const result = JSON.parse(event.data);

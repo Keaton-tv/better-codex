@@ -34,7 +34,7 @@
 (set -o pipefail; curl -fsSL https://raw.githubusercontent.com/Keaton-tv/better-codex/main/install.sh | /bin/bash)
 ```
 
-桌面会出现 **「Codex-Model-Slider.command」** 和一个隐藏的缓存辅助文件。先结束 Codex 中正在进行的任务，再双击启动脚本；等终端显示 **「三档已加载」**，就可以拖动原生滑块切换了。以后只需双击桌面的文件。安装与运行提示均为中英双语。
+桌面会出现 **「Codex-Model-Slider.command」** 和一个隐藏的辅助文件。先结束 Codex 中正在进行的任务，再双击启动脚本；等终端显示 **「Better Codex 已加载」**，就可以拖动原生滑块或打开 **设置 → Better Codex**。以后只需双击桌面的文件。安装与运行提示均为中英双语。
 
 **运行条件：** macOS，应用安装在 `/Applications/ChatGPT.app`；Node.js 会自动检查并准备，无需手动安装；账号需要本来就能使用对应模型和强度。脚本不会解锁模型或增加额度。
 
@@ -43,7 +43,7 @@
 
 也可以点击 **Code → Download ZIP**，解压后在同一目录保留 [Codex-Model-Slider.command](Codex-Model-Slider.command) 和 [cache-indicator.mjs](cache-indicator.mjs)，再双击启动脚本。如果想把它安装到桌面，在终端输入 `bash `，拖入解压目录里的 `install.sh`，再输入 ` --local` 并回车。
 
-安装命令下载启动脚本和只读缓存辅助文件，不会启动或退出应用，也不需要 `sudo`。桌面已有同名文件时会停止；更新时先把旧文件移走，再运行命令。你可以先[查看安装脚本](install.sh)。
+安装命令下载启动脚本和设置辅助文件，不会启动或退出应用，也不需要 `sudo`。桌面已有同名文件时会停止；更新时先把旧文件移走，再运行命令。你可以先[查看安装脚本](install.sh)。
 
 如果 Codex 正在运行，脚本会先等待 5 秒，期间可以按 Ctrl+C 取消，再请求正常退出并重启。若自动退出失败，按提示切回 Codex，按 ⌘Q。
 
@@ -54,6 +54,10 @@
 通过桌面启动脚本打开应用后，本地任务的上下文指示器旁边会显示类似 `Cache ~29m` 的估计值。辅助程序读取本地任务记录中的缓存 token 数。显示问号表示没有近期确认的缓存读取或写入，或者 30 分钟的最低缓存期限已经过去。下一次真实请求才能确认缓存是否复用。辅助程序不会发送保温消息。灵感来自 [CodexZero 的缓存指示器](https://github.com/Retro2512/CodexZero)。
 
 旁边还会显示类似 `◷ 68% left` 的每周 Codex 剩余额度，每两分钟通过应用自带的 Codex 服务更新一次。鼠标悬停可查看重置时间；若服务没有提供每周额度，则不显示此项。
+
+## Better Codex 设置
+
+通过桌面脚本启动后，打开 **设置 → Better Codex**。可以分别选择滑块三档的模型与推理强度，也可以独立开启或关闭缓存状态和每周用量提示。修改会立即生效，并保存在应用的本地存储中，供下次通过 Better Codex 启动时使用。菜单提供 GPT-6 Luna、Sol、Astra，以及 GPT-5.6 Luna、Sol；账号实际可用的模型仍由 Codex 决定。
 
 ## 为什么做这个项目？
 
@@ -79,26 +83,16 @@
 <details>
 <summary><strong>自定义三档</strong></summary>
 
-用文本编辑器打开 `Codex-Model-Slider.command`，找到开头的 `presets`，改成账号支持的三个组合，然后重新运行：
-
-```js
-const presets=[
-  {model:'gpt-6-luna',reasoning_effort:'high'},
-  {model:'gpt-6-sol',reasoning_effort:'medium'},
-  {model:'gpt-6-astra',reasoning_effort:'low'},
-];
-```
-
-模型 ID 和推理强度必须匹配账号及客户端实际支持的值。终端成功提示中的三档名称是固定文字，自定义时也可以同步修改。
+打开 **设置 → Better Codex**，直接调整三档。默认依次为 Luna High、Sol Medium 和 Astra Low。账号是否支持所选组合仍由应用判断。
 
 </details>
 
 <details>
 <summary><strong>运行原理与恢复默认</strong></summary>
 
-脚本用临时调试端口启动官方应用，通过 Chromium DevTools Protocol（CDP）连接 `app://-/` 界面，在内存中包装 Statsig 客户端的 `getDynamicConfig`，只替换配置 `423260384` 的 `presets`，再发送 `values_updated` 通知界面刷新。滑块的模型切换、参数保存和可用性判断仍由应用原有代码处理。
+脚本用临时调试端口启动官方应用，通过 Chromium DevTools Protocol（CDP）连接 `app://-/` 界面，在内存中包装 Statsig 客户端的 `getDynamicConfig`，只替换配置 `423260384` 的 `presets`，再发送 `values_updated` 通知界面刷新。辅助程序还会在网页界面中加入 Better Codex 设置页和输入框旁的提示。模型选择和可用性判断仍由应用原有代码处理。
 
-它不修改 ASAR、Info.plist、应用源码或签名，也不写入持久预设文件。页面刷新或应用退出后，内存覆盖就会消失。
+它不修改 ASAR、Info.plist、应用源码或签名。设置保存在应用本地存储的 `better-codex.settings.v1` 中。正常启动 Codex 时不会应用这个界面覆盖，但已保存的选择仍在。
 
 **恢复原生滑块：完全退出应用，再从 Dock 正常打开。** 已经选定的模型可能仍由应用自身保存；恢复滑块不等于清空会话设置。
 
