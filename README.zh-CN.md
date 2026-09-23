@@ -31,7 +31,7 @@
 打开 macOS「终端」，复制下面这一行并按回车：
 
 ```bash
-(set -o pipefail; curl -fsSL https://raw.githubusercontent.com/Keaton-tv/codex-model-slider/main/install.sh | /bin/bash)
+(set -o pipefail; curl -fsSL https://raw.githubusercontent.com/Keaton-tv/better-codex/main/install.sh | /bin/bash)
 ```
 
 桌面会出现 **「Codex-Model-Slider.command」** 和一个隐藏的缓存辅助文件。先结束 Codex 中正在进行的任务，再双击启动脚本；等终端显示 **「三档已加载」**，就可以拖动原生滑块切换了。以后只需双击桌面的文件。安装与运行提示均为中英双语。

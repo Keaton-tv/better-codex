@@ -31,7 +31,7 @@ This fork uses Keaton's preferred GPT-6 presets. The original project is [cabbag
 Open Terminal on macOS, paste this one line, and press Return:
 
 ```bash
-(set -o pipefail; curl -fsSL https://raw.githubusercontent.com/Keaton-tv/codex-model-slider/main/install.sh | /bin/bash)
+(set -o pipefail; curl -fsSL https://raw.githubusercontent.com/Keaton-tv/better-codex/main/install.sh | /bin/bash)
 ```
 
 **Codex-Model-Slider.command** appears on your Desktop with a hidden cache helper beside it. Finish active Codex tasks, double-click it, and wait for **Three presets loaded / 三档已加载**. Then use the native slider. Next time, just double-click the desktop file. Installer and launcher messages are shown in both English and Chinese.

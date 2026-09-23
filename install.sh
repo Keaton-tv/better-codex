@@ -33,10 +33,10 @@ if [ "${1:-}" = --local ]; then
   cp "$source_dir/cache-indicator.mjs" "$helper"
 else
   curl --fail --show-error --silent --location --connect-timeout 15 --max-time 120 \
-    'https://raw.githubusercontent.com/Keaton-tv/codex-model-slider/main/Codex-Model-Slider.command' \
+    'https://raw.githubusercontent.com/Keaton-tv/better-codex/main/Codex-Model-Slider.command' \
     --output "$launcher"
   curl --fail --show-error --silent --location --connect-timeout 15 --max-time 120 \
-    'https://raw.githubusercontent.com/Keaton-tv/codex-model-slider/main/cache-indicator.mjs' \
+    'https://raw.githubusercontent.com/Keaton-tv/better-codex/main/cache-indicator.mjs' \
     --output "$helper"
 fi
 
